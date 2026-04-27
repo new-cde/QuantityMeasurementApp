@@ -35,18 +35,21 @@ class QuantityLength {
         return unit.toInches(value);
     }
 
+    // ✅ UC6 (same as before)
     public QuantityLength add(QuantityLength other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Null value");
+        return add(other, this.unit);
+    }
+
+    // ✅ UC7 (NEW METHOD)
+    public QuantityLength add(QuantityLength other, LengthUnit targetUnit) {
+        if (other == null || targetUnit == null) {
+            throw new IllegalArgumentException("Invalid input");
         }
 
-        // convert both to inches
         double totalInches = this.toInches() + other.toInches();
+        double result = targetUnit.fromInches(totalInches);
 
-        // convert back to THIS unit
-        double resultValue = unit.fromInches(totalInches);
-
-        return new QuantityLength(resultValue, this.unit);
+        return new QuantityLength(result, targetUnit);
     }
 
     public double getValue() {
@@ -77,8 +80,8 @@ public class Quantity_Measurement_App {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        QuantityLength result = q1.add(q2);
-
-        System.out.println(result); // Quantity(2.0, FEET)
+        System.out.println(q1.add(q2, LengthUnit.FEET));     // 2 FEET
+        System.out.println(q1.add(q2, LengthUnit.INCHES));   // 24 INCHES
+        System.out.println(q1.add(q2, LengthUnit.YARDS));    // ~0.667 YARDS
     }
 }

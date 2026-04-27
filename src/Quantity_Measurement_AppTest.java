@@ -4,43 +4,35 @@ import static org.junit.jupiter.api.Assertions.*;
 class Quantity_Measurement_AppTest {
 
     @Test
-    void testFeetPlusFeet() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(2.0, LengthUnit.FEET);
-
-        assertEquals(3.0, q1.add(q2).getValue(), 0.0001);
-    }
-
-    @Test
-    void testFeetPlusInches() {
+    void testFeetTarget() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        assertEquals(2.0, q1.add(q2).getValue(), 0.0001);
+        assertEquals(2.0, q1.add(q2, LengthUnit.FEET).getValue(), 0.0001);
     }
 
     @Test
-    void testInchesPlusFeet() {
-        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCHES);
-        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
+    void testInchesTarget() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        assertEquals(24.0, q1.add(q2).getValue(), 0.0001);
+        assertEquals(24.0, q1.add(q2, LengthUnit.INCHES).getValue(), 0.0001);
     }
 
     @Test
-    void testYardPlusFeet() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.YARDS);
-        QuantityLength q2 = new QuantityLength(3.0, LengthUnit.FEET);
+    void testYardsTarget() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        assertEquals(2.0, q1.add(q2).getValue(), 0.0001);
+        assertEquals(0.6667, q1.add(q2, LengthUnit.YARDS).getValue(), 0.01);
     }
 
     @Test
-    void testCentimeterPlusInch() {
-        QuantityLength q1 = new QuantityLength(2.54, LengthUnit.CENTIMETERS);
+    void testCentimeterTarget() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCHES);
         QuantityLength q2 = new QuantityLength(1.0, LengthUnit.INCHES);
 
-        assertEquals(5.08, q1.add(q2).getValue(), 0.01);
+        assertEquals(5.08, q1.add(q2, LengthUnit.CENTIMETERS).getValue(), 0.01);
     }
 
     @Test
@@ -48,7 +40,11 @@ class Quantity_Measurement_AppTest {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        assertTrue(q1.add(q2).equals(q2.add(q1)));
+        assertEquals(
+                q1.add(q2, LengthUnit.YARDS).getValue(),
+                q2.add(q1, LengthUnit.YARDS).getValue(),
+                0.0001
+        );
     }
 
     @Test
@@ -56,7 +52,7 @@ class Quantity_Measurement_AppTest {
         QuantityLength q1 = new QuantityLength(5.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(0.0, LengthUnit.INCHES);
 
-        assertEquals(5.0, q1.add(q2).getValue(), 0.0001);
+        assertEquals(1.6667, q1.add(q2, LengthUnit.YARDS).getValue(), 0.01);
     }
 
     @Test
@@ -64,13 +60,22 @@ class Quantity_Measurement_AppTest {
         QuantityLength q1 = new QuantityLength(5.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(-2.0, LengthUnit.FEET);
 
-        assertEquals(3.0, q1.add(q2).getValue(), 0.0001);
+        assertEquals(36.0, q1.add(q2, LengthUnit.INCHES).getValue(), 0.0001);
     }
 
     @Test
-    void testNull() {
+    void testNullTarget() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-        assertThrows(IllegalArgumentException.class, () -> q1.add(null));
+        assertThrows(IllegalArgumentException.class, () -> q1.add(q2, null));
+    }
+
+    @Test
+    void testLargeValues() {
+        QuantityLength q1 = new QuantityLength(1000.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(500.0, LengthUnit.FEET);
+
+        assertEquals(18000.0, q1.add(q2, LengthUnit.INCHES).getValue(), 0.0001);
     }
 }
